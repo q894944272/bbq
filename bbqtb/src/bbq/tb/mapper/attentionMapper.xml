@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD/ Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbq.tb.mapper.AttentionMapper">
+ <insert id="insert_atention" parameterType="Attention" >
+ insert into t_attention(noticer,concerned) values(#{noticer},#{concerned});
+ </insert>
+ <delete id="delete_atention" parameterType="Attention">
+	delete from t_attention where noticer=#{noticer} and concerned=#{concerned};
+</delete>
+ <select id="countByNoticer" parameterType="String" resultType="String">
+	select count(*) from t_attention where noticer=#{0};
+</select>
+ <select id="countByConcerned" parameterType="String" resultType="String">
+	select count(*) from t_attention where concerned=#{0};
+</select>
+ <select id="isCanAttention" parameterType="String" resultType="String">
+	select count(*) from t_attention where noticer=#{0} and concerned=#{1};
+</select>
+</mapper>

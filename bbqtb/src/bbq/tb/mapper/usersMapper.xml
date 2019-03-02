@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD/ Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbq.tb.mapper.UserMapper">
+ <insert id="save" parameterType="User" >
+ 	insert into t_user(username,password,sex,say) values(#{username},#{password},#{sex},#{say});
+ </insert>
+ 
+ <select id="login" parameterType="String" resultType="User">
+	select * from t_user where username=#{username} and password=#{password};
+</select>
+<!--  <select id="userinfo" parameterType="User" resultType="User">
+	select * from t_user where username=#{username} and password=#{password};
+</select> -->
+ <select id="downimage" parameterType="String" resultType="String">
+	select url from t_user where username=#{username};
+</select>
+ <select id="serchUser" parameterType="String" resultType="User">
+	select * from t_user where username=#{username};
+</select>
+
+<update id="uploadimage" parameterType="String">
+	 update t_user set url=#{0} where username=#{1};
+</update>
+
+ <select id="serchUserlist" parameterType="String" resultType="User">
+	select url,concerned,say from t_attention join t_user on concerned=username where noticer=#{0};
+</select>
+ <select id="serchUserlist2" parameterType="String" resultType="User">
+	select url,noticer,say from t_attention join t_user on noticer=username where concerned=#{0};
+</select>
+
+<select id="getyue" parameterType="String" resultType="int">
+	select yue from t_user where username=#{username};
+</select>
+
+<select id="getsvp" parameterType="String" resultType="String">
+	select IFNULL(IF(supper_vip <![CDATA[<]]> NOW(),'已到期',supper_vip),'未开通')  from t_user where username=#{username};
+</select>
+<update id="addyue" parameterType="Recharge">
+	update t_user set yue= (#{money_sum}*100+yue) where username = #{uname};
+</update>
+
+<update id="changgeyue">
+	update t_user set yue = yue+#{1} where username = #{0};
+</update>
+
+<update id="changgevip">
+	update t_user set supper_vip = IF(IFNULL(supper_vip,'1970-01-01 00:00:00') <![CDATA[<]]> NOW(),DATE_ADD(now(),INTERVAL #{1} day),DATE_ADD(supper_vip,INTERVAL #{1} day)) where username=#{0};
+</update>
+
+<select id="getcard" parameterType="String" resultType="int">
+	select rep_card from t_user where username=#{username};
+</select>
+<select id="getscard" parameterType="String" resultType="int">
+	select sup_rep_card from t_user where username=#{username};
+</select>
+
+<update id="upcard">
+	update t_user set sup_rep_card = sup_rep_card+#{1},rep_card = rep_card+#{2} where username = #{0};
+</update>
+</mapper>

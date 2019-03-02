@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<package name="bbq.tb.entity"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="bbq/tb/mapper/usersMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/tieMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/rMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/baMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/relationMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/attentionMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/zorcMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/bmanagerMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/smanagerMapper.xml"/>
+		<mapper resource="bbq/tb/mapper/rechargeMapper.xml"/>
+	</mappers>
+
+
+</configuration>

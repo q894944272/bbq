@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD/ Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbq.tb.mapper.SmanagerMapper">
+  <insert id="apply" parameterType="Bmanager" >
+	insert into t_smanager(apply_say,apply_time,uname,bname) values(#{apply_say},now(),#{uname},#{bname});
+ </insert>
+  <select id="serch" parameterType="Bmanager" resultType="Bmanager">
+	select *,(select datediff(now(),apply_time)-1  from t_smanager where uname=#{uname} and bname=#{bname}) as aeDay from t_smanager where uname=#{uname} and bname=#{bname};
+</select>
+<update id="upapply" parameterType="Relation">
+	update t_smanager set apply_say=#{apply_say},apply_time=now(),is_exa=0 where uname=#{uname} and bname=#{bname};
+</update>
+<select id="serchSb" parameterType="String" resultType="User">
+	select username,url from t_smanager join t_user on username=uname where bname=#{bname} and is_exa=1;
+</select>
+</mapper>

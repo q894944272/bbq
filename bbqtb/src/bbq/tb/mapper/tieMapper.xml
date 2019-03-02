@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD/ Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbq.tb.mapper.TieMapper">
+  <insert id="save" parameterType="Tie" >
+ 	insert into t_tie(bname,tname,tcontent,ttime,last_time,uname) values(#{bname},#{tname},#{tcontent},now(),now(),#{uname});
+ </insert>
+ <select id="serchtie1" parameterType="String" resultType="Tie">
+	<!-- select * from t_tie where ttime>#{0} order by rcount desc; -->
+	select *,IFNULL((select zorc from t_zorc where tid=t_tie.tid and uname=#{1}),0) as zflag
+	,(select IF(IFNULL(supper_vip,'1970-01-01 00:00:00') > NOW(),'1','0') from t_user where username=uname) + (select IF(IFNULL(vip_date,'1970-01-01 00:00:00') > NOW(),'1','0')  from t_relation where uname=t_tie.uname and bname=t_tie.bname)as isvip
+	 from t_tie where ttime>#{0} order by rcount desc;
+</select>
+ <select id="serchtie2" parameterType="String" resultType="Tie">
+	<!-- select * from t_tie where uname in (select concerned from t_attention where noticer = #{0}) order by ttime desc; -->
+	select *,IFNULL((select zorc from t_zorc where tid=t_tie.tid and uname=#{1}),0) as zflag 
+	,(select IF(IFNULL(supper_vip,'1970-01-01 00:00:00') > NOW(),'1','0') from t_user where username=uname) + (select IF(IFNULL(vip_date,'1970-01-01 00:00:00') > NOW(),'1','0')  from t_relation where uname=t_tie.uname and bname=t_tie.bname)as isvip
+	from t_tie where uname in (select concerned from t_attention where noticer = #{0}) order by ttime desc;
+</select>
+<!--  <select id="serchtie3" parameterType="String" resultType="Tie">
+	select * from t_tie where bname=#{0} order by ttime desc;
+	select *,IFNULL((select zorc from t_zorc where tid=t_tie.tid and uname=#{1}),0) as zflag 
+	,(select IF(IFNULL(supper_vip,'0') > NOW(),'1','0') from t_user where username=uname) + (select IF(IFNULL(vip_date,'0') > NOW(),'1','0')  from t_relation where uname=t_tie.uname and bname=t_tie.bname)as isvip
+	from t_tie where bname=#{0} order by last_time desc;
+</select> -->
+<select id="serchtie3" parameterType="String" resultType="Tie">
+
+	select *,IFNULL((select zorc from t_zorc where tid=t_tie.tid and uname=#{1}),0) as zflag 
+	,(select IF(IFNULL(supper_vip,'1970-01-01 00:00:00') > NOW(),'1','0') from t_user where username=uname) + (select IF(IFNULL(vip_date,'1970-01-01 00:00:00') > NOW(),'1','0')  from t_relation where uname=t_tie.uname and bname=t_tie.bname)as isvip
+	from t_tie where bname=#{0} and last_time <![CDATA[<]]> IF(#{2}='null',now(),#{2})  order by last_time desc limit 0,10;
+</select> 
+ <select id="serchtie4" parameterType="String" resultType="Tie">
+	<!-- select * from t_tie where uname=#{0} order by ttime desc; -->
+	select *,IFNULL((select zorc from t_zorc where tid=t_tie.tid and uname=#{1}),0) as zflag
+	,(select IF(IFNULL(supper_vip,'1970-01-01 00:00:00') > NOW(),'1','0') from t_user where username=uname) + (select IF(IFNULL(vip_date,'1970-01-01 00:00:00') > NOW(),'1','0')  from t_relation where uname=t_tie.uname and bname=t_tie.bname)as isvip
+	 from t_tie where uname=#{0} order by ttime desc;
+</select>
+ <update id="upcount" parameterType="R">
+	update t_tie SET rlou=rlou+1,rcount=rcount+1 where tid=#{tid};
+</update>
+ <update id="upcount2" parameterType="R">
+	update t_tie SET last_time=now()  where tid=#{tid};
+</update>
+
+<update id="addz">
+	update t_tie SET zcount = zcount+1 where tid=#{tid};
+</update>
+
+<update id="addc">
+	update t_tie SET ccount = ccount+1 where tid=#{tid};
+</update>
+
+<update id="subz">
+	update t_tie SET zcount = zcount-1 where tid=#{tid};
+</update>
+
+<update id="subc">
+	update t_tie SET ccount = ccount-1 where tid=#{tid};
+</update>
+
+</mapper>

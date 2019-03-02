@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD/ Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbq.tb.mapper.RMapper">
+  <insert id="save" parameterType="R" >
+ 	insert into t_re(tid,r_content,rtime,uname,rlou) values(#{tid},#{r_content},now(),#{uname},(select rlou+1 from t_tie where tid=#{tid}));
+ </insert>
+ <select id="serchr" resultType="R">
+	select * from t_re,t_tie where t_re.tid = t_tie.tid  and t_re.uname=#{0} ORDER BY t_re.rtime desc;
+</select>
+ <select id="serchr2" resultType="R">
+<!-- select case when is_attent=0 then 0 else grade end from t_relation where uname=#{uname} and bname=#{bname} -->
+
+select *,(select case when is_attent=0 then 0 else grade end from t_relation where bname=#{1} and t_relation.uname=t_re.uname) as grade
+,(select IF(IFNULL(supper_vip,'0') > NOW(),'1','0') from t_user where username=uname) + (select IF(IFNULL(vip_date,'0') > NOW(),'1','0')  from t_relation where uname=t_re.uname and bname=#{1}) as isvip
+from t_re where tid=#{0} ORDER BY t_re.rlou;
+
+	<!-- select *,IFNULL((select grade from t_relation where bname=#{1} and t_relation.uname=t_re.uname),0) as grade from t_re where tid=#{0} ORDER BY t_re.rlou; -->
+</select>
+<delete id="deleter" parameterType="int">
+	delete from t_re where rid=#{0}
+</delete>
+
+
+</mapper>

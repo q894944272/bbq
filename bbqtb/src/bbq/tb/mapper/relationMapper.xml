@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD/ Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbq.tb.mapper.RelationMapper">
+  <insert id="save" parameterType="Relation" >
+	insert into t_relation(bname,uname) values(#{bname},#{uname});
+ </insert>
+ <update id="saveAttent" parameterType="Relation" >
+	update t_relation set is_attent = 1 
+ </update>
+ <update id="removeAttent" parameterType="Relation" >
+	update t_relation set is_attent = 0 where bname=#{bname}and uname=#{uname};
+ </update>
+   <update id="upcount" parameterType="Tie">
+	update t_relation SET grade = grade+5 where bname=#{bname} and uname=#{uname};
+</update>
+  <update id="upcount3" parameterType="R">
+	update t_relation SET grade=grade+2 where bname=(select bname from t_tie where tid=#{tid}) and uname=#{uname} and is_attent=1;
+</update>
+ <select id="selectGrade" parameterType="Relation" resultType="String">   
+	<!-- select grade from t_relation where uname=#{uname} and bname=#{bname}; -->
+	select case when is_attent=0 then 0 else grade end from t_relation where uname=#{uname} and bname=#{bname};
+</select>
+ <select id="attentBaBy_user" parameterType="String" resultType="Relation">
+	<!-- select * from t_relation where uname=#{username}; -->
+	select *,(select url from t_ba where t_ba.bname=t_relation.bname) as url from t_relation where uname=#{username} and is_attent=1;
+</select>
+ <select id="userCountByba" parameterType="String" resultType="String">
+	select count(*) from t_relation where bname=#{bname} and is_attent=1;
+</select>
+ <select id="tieCountBymine" parameterType="String" resultType="String">
+	SELECT IFNULL((select is_attent from t_relation where bname=#{0}and uname=#{1}),0);
+</select>
+<select id="tieCountBymine2" parameterType="String" resultType="String">
+	 select count(*) from t_relation where bname=#{0} and uname=#{1};
+</select>
+ <select id="countByBa" parameterType="String" resultType="String">
+	select count(*) from t_relation where uname=#{uname};
+</select>
+<select id="isSign" parameterType="Relation" resultType="int">
+	select datediff(now(),last_sign_time) from t_relation where uname=#{uname} and bname=#{bname};
+</select>
+<update id="signFirst" parameterType="Relation">
+	update t_relation set grade=grade+6
+	
+	* (SELECT b.bei FROM	 (SELECT( IF ( (	 SELECT  IF (IFNULL(supper_vip, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_user WHERE username = #{uname} ) + ( SELECT  IF (IFNULL(vip_date, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_relation WHERE uname = #{uname} AND bname = #{bname} > 0 ), 6, 1 ) ) AS bei ) AS b)
+	
+	,sign_total=sign_total+1,last_sign_time=now(),continuty_day=1 where uname=#{uname} and bname=#{bname};
+</update>
+<update id="signCon" parameterType="Relation">
+	update t_relation set grade=grade+IF(continuty_day<![CDATA[<]]>6,6+continuty_day,12)
+	
+	* (SELECT b.bei FROM	 (SELECT( IF ( (	 SELECT  IF (IFNULL(supper_vip, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_user WHERE username = #{uname} ) + ( SELECT  IF (IFNULL(vip_date, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_relation WHERE uname = #{uname} AND bname = #{bname} > 0 ), 6, 1 ) ) AS bei ) AS b)
+ 
+	,sign_total=sign_total+1,last_sign_time=now(),continuty_day=continuty_day+1 where uname=#{uname} and bname=#{bname};
+</update>
+<update id="signIncon" parameterType="Relation">
+	update t_relation set grade=grade+6
+	
+		* (SELECT b.bei FROM	 (SELECT( IF ( (	 SELECT  IF (IFNULL(supper_vip, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_user WHERE username = #{uname} ) + ( SELECT  IF (IFNULL(vip_date, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_relation WHERE uname = #{uname} AND bname = #{bname} > 0 ), 6, 1 ) ) AS bei ) AS b)
+ 
+	,sign_total=sign_total+1,break_day=datediff(now(),last_sign_time)-1,last_sign_time=now(),last_con_day=continuty_day,continuty_day=1 
+	where uname=#{uname} and bname=#{bname};
+</update>
+ <select id="getconday" parameterType="Relation" resultType="int">
+	select continuty_day from t_relation where uname=#{uname} and bname=#{bname};
+</select>
+<select id="getSign" parameterType="Relation" resultType="Relation">
+select sign_total,last_sign_time,continuty_day,break_day,last_con_day from t_relation where uname=#{uname} and bname=#{bname};
+</select>
+<update id="changgevip" parameterType="Relation">
+	update t_relation set vip_date = IF(IFNULL(vip_date,'1970-01-01 00:00:00') <![CDATA[<]]> NOW(),DATE_ADD(now(),INTERVAL #{vipday} day),DATE_ADD(vip_date,INTERVAL #{vipday} day)) where uname=#{uname} and bname=#{bname};
+</update>
+<select id="getvip" parameterType="Relation" resultType="String">
+	select IFNULL(IF(vip_date <![CDATA[<]]> NOW(),'已到期',vip_date),'未开通')  from t_relation where uname=#{uname} and bname=#{bname};
+</select>
+<select id="getbei" parameterType="Relation" resultType="int">
+SELECT( IF ( (	 SELECT  IF (IFNULL(supper_vip, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_user WHERE username = #{uname} ) + ( SELECT  IF (IFNULL(vip_date, '1970-01-01 00:00:00') > NOW(), 1, 0)
+ FROM t_relation WHERE uname = #{uname} AND bname = #{bname} > 0 ), 6, 1 ) ) 
+</select>
+	<update id="supsig" >
+	update t_relation set grade=grade+6*#{2} 
+	,sign_total=sign_total+#{2},continuty_day=continuty_day+break_day+last_con_day,break_day=0,last_con_day=0
+	where uname=#{0} and bname=#{1};
+</update>
+	<update id="supsig2" >
+	update t_relation set grade=grade+6*#{2} 
+	,sign_total=sign_total+#{2},continuty_day=continuty_day+#{2},break_day=break_day-#{2}
+	where uname=#{0} and bname=#{1};
+</update>
+  <update id="upgrade" >
+	update t_relation SET grade = grade+#{2} where bname=#{0} and uname=#{1};
+</update>
+<update id="supsig3" >
+	update t_relation set grade=grade+12*IF(break_day > 30, 30, break_day)
+	,sign_total=sign_total+IF(break_day > 30, 30, break_day),continuty_day=sign_total,break_day=0,last_con_day=0
+	where uname=#{uname} and bname=#{bname};
+</update>
+</mapper>
+
+

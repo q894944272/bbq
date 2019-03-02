@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD/ Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbq.tb.mapper.RechargeMapper">
+  <select id="serchcard" parameterType="Recharge" resultType="Recharge">
+	select * from t_recharge where card_id=#{card_id} and card_m=#{card_m};
+</select>
+<update id="upcard" parameterType="Recharge">
+	update t_recharge set uname=#{uname},act_time=now() where card_id=#{card_id} and card_m=#{card_m};
+</update>
+</mapper>

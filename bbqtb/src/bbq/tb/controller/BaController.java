@@ -13,7 +13,7 @@ import bbq.tb.entity.Bmanager;
 import bbq.tb.entity.Relation;
 import bbq.tb.service.BaService;
 
-//8713453443s
+//8713453443sd
 @Controller
 public class BaController {
 	@Autowired
